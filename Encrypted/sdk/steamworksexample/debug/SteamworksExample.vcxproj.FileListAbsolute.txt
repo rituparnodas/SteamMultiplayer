@@ -1,0 +1,2 @@
+E:\Udemy course\Unreal Engine C++\SteamMultiplayer\Encrypted\sdk\steamworksexample\Debug\SteamworksExample.exe
+E:\Udemy course\Unreal Engine C++\SteamMultiplayer\Encrypted\sdk\steamworksexample\Debug\SteamworksExample.pdb

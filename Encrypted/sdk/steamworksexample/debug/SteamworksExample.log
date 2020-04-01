@@ -1,0 +1,36 @@
+﻿cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  voicechat.cpp
+  stdafx.cpp
+  p2pauth.cpp
+  musicplayer.cpp
+  htmlsurface.cpp
+  gameenginewin32.cpp
+  connectingmenu.cpp
+  clanchatroom.cpp
+  VectorEntity.cpp
+  Sun.cpp
+  StatsAndAchievements.cpp
+  StarField.cpp
+  SpaceWarServer.cpp
+  SpaceWarEntity.cpp
+  SpaceWarClient.cpp
+  Ship.cpp
+  ServerBrowser.cpp
+  RemoteStorage.cpp
+  RemotePlay.cpp
+  QuitMenu.cpp
+  Generating Code...
+  Compiling...
+  PhotonBeam.cpp
+  MainMenu.cpp
+  Main.cpp
+  Lobby.cpp
+  Leaderboards.cpp
+  Inventory.cpp
+  Friends.cpp
+  BaseMenu.cpp
+  Generating Code...
+BaseMenu.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
+  SteamworksExample.vcxproj -> E:\Udemy course\Unreal Engine C++\SteamMultiplayer\Encrypted\sdk\steamworksexample\.\Debug\SteamworksExample.exe
+          1 file(s) copied.
+          1 file(s) copied.
