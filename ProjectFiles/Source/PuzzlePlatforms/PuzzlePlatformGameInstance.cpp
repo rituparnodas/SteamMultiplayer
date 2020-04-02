@@ -5,13 +5,13 @@
 #include "PlatformTrigger.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
+#include "OnlineSubsystem.h"
 
 #include "UObject/ConstructorHelpers.h"
 #include "MenuSystem/MainMenu.h" // Added
 #include "MenuSystem/MenuWidget.h"
 #include "Blueprint/UserWidget.h"
-
-#include "GameFramework/PlayerController.h"
 
 UPuzzlePlatformGameInstance::UPuzzlePlatformGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -26,7 +26,20 @@ UPuzzlePlatformGameInstance::UPuzzlePlatformGameInstance(const FObjectInitialize
 
 void UPuzzlePlatformGameInstance::Init()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Found Class %s"), *MenuClass->GetName());
+	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
+	if (Subsystem != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found %s"), *Subsystem->GetSubsystemName().ToString())
+		IOnlineSessionPtr SessionInterface = Subsystem->GetSessionInterface();
+		if (SessionInterface.IsValid())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Found Session Interface"))
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Not Found"))
+	}
 }
 
 void UPuzzlePlatformGameInstance::Host()
