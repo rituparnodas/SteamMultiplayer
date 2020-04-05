@@ -6,7 +6,9 @@
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
-#include "OnlineSubsystem.h"
+
+#include "Interfaces/OnlineSessionInterface.h"
+#include "OnlineSessionSettings.h"
 
 #include "UObject/ConstructorHelpers.h"
 #include "MenuSystem/MainMenu.h" // Added
@@ -30,10 +32,10 @@ void UPuzzlePlatformGameInstance::Init()
 	if (Subsystem != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Found %s"), *Subsystem->GetSubsystemName().ToString())
-		IOnlineSessionPtr SessionInterface = Subsystem->GetSessionInterface();
+		SessionInterface = Subsystem->GetSessionInterface();
 		if (SessionInterface.IsValid())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Found Session Interface"))
+			SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformGameInstance::OnCreateSessionComplete);
 		}
 	}
 	else
@@ -42,8 +44,14 @@ void UPuzzlePlatformGameInstance::Init()
 	}
 }
 
-void UPuzzlePlatformGameInstance::Host()
+void UPuzzlePlatformGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)
 {
+	if (!Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Couldn't Create Session"))
+		return;
+	}
+
 	if (Menu != nullptr)
 	{
 		Menu->Teardown();
@@ -58,6 +66,15 @@ void UPuzzlePlatformGameInstance::Host()
 	if (!ensure(World != nullptr)) return;
 
 	World->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
+}
+
+void UPuzzlePlatformGameInstance::Host()
+{
+	if (SessionInterface.IsValid())
+	{
+		FOnlineSessionSettings SessionSettings;
+		SessionInterface->CreateSession(0, TEXT("My SessionGame"), SessionSettings);
+	}
 }
 
 void UPuzzlePlatformGameInstance::Join(const FString& Address)
@@ -78,7 +95,7 @@ void UPuzzlePlatformGameInstance::Join(const FString& Address)
 	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
 }
 
-void UPuzzlePlatformGameInstance::LoadMenu()
+void UPuzzlePlatformGameInstance::LoadMenu() // LoadMenuWidget()
 {
 	if (!ensure(MenuClass != nullptr)) return;
 
@@ -109,3 +126,4 @@ void UPuzzlePlatformGameInstance::LoadMainMenu()
 
 	PlayerController->ClientTravel("/Game/_Level/MainMenu", ETravelType::TRAVEL_Absolute);
 }
+

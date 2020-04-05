@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "OnlineSubsystem.h"
 #include "MenuSystem/MenuInterface.h" // Add The Folder Prefix
 #include "PuzzlePlatformGameInstance.generated.h"
 
@@ -42,4 +43,8 @@ private:
 	
 	// Local Variable To Create Widget 
 	class UMainMenu* Menu;
+
+	IOnlineSessionPtr SessionInterface;
+
+	void OnCreateSessionComplete(FName SessionName, bool Success);
 };

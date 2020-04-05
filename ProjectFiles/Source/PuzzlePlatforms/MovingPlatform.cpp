@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MovingPlatform.h"
+#include "PlatformTrigger.h"
 
 AMovingPlatform::AMovingPlatform()
 {
