@@ -44,8 +44,9 @@ void UPuzzlePlatformGameInstance::Init()
 			SessionSearch = MakeShareable(new FOnlineSessionSearch());
 			if (SessionSearch.IsValid())
 			{
+				SessionSearch->bIsLanQuery = true;
 				UE_LOG(LogTemp, Warning, TEXT("Starting Finding Session"))
-				SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+				SessionInterface->FindSessions(0, SessionSearch.ToSharedRef()); // Session Search Needs Some Settings Here
 			}
 		}
 	}
@@ -108,15 +109,22 @@ void UPuzzlePlatformGameInstance::CreateSession()
 	if (SessionInterface.IsValid())
 	{
 		FOnlineSessionSettings SessionSettings;
+		SessionSettings.bIsLANMatch = true;
+		SessionSettings.NumPublicConnections = 2;
+		SessionSettings.bShouldAdvertise = true;
 		SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 	}
 }
 
 void UPuzzlePlatformGameInstance::OnFindSessionComplete(bool Success)
 {
-	if (Success)
+	if (Success && SessionSearch.IsValid())
 	{
-		UE_LOG(LogTemp,Warning,TEXT("Find Session Complete"))
+		UE_LOG(LogTemp, Warning, TEXT("Find Session Complete"))
+		for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Id is %s"), *SearchResult.GetSessionIdStr())
+		}
 	}
 }
 
