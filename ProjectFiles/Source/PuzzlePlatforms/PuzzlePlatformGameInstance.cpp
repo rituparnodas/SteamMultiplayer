@@ -15,6 +15,8 @@
 #include "MenuSystem/MenuWidget.h"
 #include "Blueprint/UserWidget.h"
 
+const static FName SESSION_NAME = TEXT("My Session Game");
+
 UPuzzlePlatformGameInstance::UPuzzlePlatformGameInstance(const FObjectInitializer& ObjectInitializer)
 {
 	ConstructorHelpers::FClassFinder<UUserWidget> MenuBPClass(TEXT("/Game/MenuSystem/WBP_MainMenu"));
@@ -36,6 +38,15 @@ void UPuzzlePlatformGameInstance::Init()
 		if (SessionInterface.IsValid())
 		{
 			SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformGameInstance::OnCreateSessionComplete);
+			SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformGameInstance::OnDestroySessionComplete);
+			SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPuzzlePlatformGameInstance::OnFindSessionComplete);
+			
+			SessionSearch = MakeShareable(new FOnlineSessionSearch());
+			if (SessionSearch.IsValid())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Starting Finding Session"))
+				SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+			}
 		}
 	}
 	else
@@ -68,12 +79,44 @@ void UPuzzlePlatformGameInstance::OnCreateSessionComplete(FName SessionName, boo
 	World->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
 }
 
+void UPuzzlePlatformGameInstance::OnDestroySessionComplete(FName SessionName, bool Success)
+{
+	if (Success)
+	{
+		CreateSession();
+	}
+}
+
 void UPuzzlePlatformGameInstance::Host()
 {
 	if (SessionInterface.IsValid())
 	{
+		FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
+		if (ExistingSession != nullptr)
+		{
+			SessionInterface->DestroySession(SESSION_NAME);
+		}
+		else
+		{
+			CreateSession();
+		}	
+	}
+}
+
+void UPuzzlePlatformGameInstance::CreateSession()
+{
+	if (SessionInterface.IsValid())
+	{
 		FOnlineSessionSettings SessionSettings;
-		SessionInterface->CreateSession(0, TEXT("My SessionGame"), SessionSettings);
+		SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
+	}
+}
+
+void UPuzzlePlatformGameInstance::OnFindSessionComplete(bool Success)
+{
+	if (Success)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("Find Session Complete"))
 	}
 }
 
@@ -126,4 +169,3 @@ void UPuzzlePlatformGameInstance::LoadMainMenu()
 
 	PlayerController->ClientTravel("/Game/_Level/MainMenu", ETravelType::TRAVEL_Absolute);
 }
-
