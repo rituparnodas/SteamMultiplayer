@@ -6,6 +6,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableTextBox.h"
 #include "Components/PanelWidget.h"
+#include "Components/TextBlock.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/Engine.h"
 #include "ServerRow.h"
@@ -48,18 +49,28 @@ void UMainMenu::HostServer()
 	}
 }
 
+void UMainMenu::SetServerList(TArray<FString> ServerNames)
+{
+	ServerList->ClearChildren();
+
+	for (const FString& ServerName : ServerNames)
+	{
+		UServerRow* Row = CreateWidget<UServerRow>(this, ServerRowClass);
+		if (!ensure(Row != nullptr)) return;
+
+		Row->ServerName->SetText(FText::FromString(ServerName));
+
+		ServerList->AddChild(Row);
+	}
+}
+
 void UMainMenu::JoinServer()
 {
 	if (MenuInterface != nullptr)
 	{
 		//if (!ensure(IPAddressField != nullptr)) return;
 		//const FString& Address = IPAddressField->GetText().ToString(); // if we want to careful about memory then [const FString&]
-		//MenuInterface->Join(Address);
-
-		UServerRow* Row = CreateWidget<UServerRow>(this, ServerRowClass);
-		if (!ensure(Row != nullptr)) return;
-
-		ServerList->AddChild(Row);
+		MenuInterface->Join("");
 	}
 }
 
@@ -68,6 +79,10 @@ void UMainMenu::OpenJoinMenu()
 	if (!ensure(MenuSwitcher != nullptr)) return;
 	if (!ensure(JoinMenu != nullptr)) return;
 	MenuSwitcher->SetActiveWidget(JoinMenu);
+	if (MenuInterface != nullptr)
+	{
+		MenuInterface->RefreshServerList();
+	}
 }
 
 void UMainMenu::OpenMainMenu()

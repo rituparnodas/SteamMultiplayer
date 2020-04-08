@@ -34,6 +34,8 @@ public:
 	void InGameLoadMenu();
 
 	virtual void LoadMainMenu() override;
+
+	void RefreshServerList() override;
 	
 private:
 	// For Construct The Widget From File

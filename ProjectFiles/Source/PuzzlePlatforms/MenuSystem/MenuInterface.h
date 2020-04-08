@@ -27,4 +27,6 @@ public:
 	virtual void Join(const FString& Address) = 0; // 0 Because To Make Sure  it Has No Implementation
 
 	virtual void LoadMainMenu() = 0;
+
+	virtual void RefreshServerList() = 0;
 };
