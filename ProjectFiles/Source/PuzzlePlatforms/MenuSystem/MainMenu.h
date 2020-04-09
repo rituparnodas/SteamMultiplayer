@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "MenuWidget.h"
+#include "Misc/Optional.h"
 #include "MainMenu.generated.h"
+
 /**
  * 
  */
@@ -16,6 +18,8 @@ public:
 	UMainMenu(const FObjectInitializer& ObjectInitializer);
 
 	void SetServerList(TArray<FString> ServerNames);
+
+	void SelectIndex(uint32 Index);
 
 protected:
 	virtual bool Initialize() override; // Method Of UUserWidget
@@ -67,4 +71,6 @@ private:
 
 	UFUNCTION()
 	void JoinServer();
+
+	TOptional<uint32> SelectedIndex;
 };
