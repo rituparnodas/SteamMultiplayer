@@ -7,7 +7,6 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 
-#include "Interfaces/OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
 
 #include "UObject/ConstructorHelpers.h"
@@ -40,6 +39,7 @@ void UPuzzlePlatformGameInstance::Init()
 			SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformGameInstance::OnCreateSessionComplete);
 			SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformGameInstance::OnDestroySessionComplete);
 			SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPuzzlePlatformGameInstance::OnFindSessionComplete);
+			SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformGameInstance::OnJoinSessionComplete);
 		}
 	}
 	else
@@ -136,22 +136,40 @@ void UPuzzlePlatformGameInstance::OnFindSessionComplete(bool Success)
 	}
 }
 
-void UPuzzlePlatformGameInstance::Join(const FString& Address)
+void UPuzzlePlatformGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
 {
+	if (!SessionInterface.IsValid()) return;
+
+	FString Address;
+	if (!SessionInterface->GetResolvedConnectString(SessionName, Address)) // OUT Parameter
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could Not Get Connect String"))
+		return;
+	}
+
+	UEngine* Engine = GetEngine();
+	if (!ensure(Engine != nullptr)) return;
+
+	//0 means, each time through we will update the existing message instead 
+	Engine->AddOnScreenDebugMessage(0, 10, FColor::Blue, FString::Printf(TEXT("Joining %s"), *Address));
+
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
+	if (!ensure(PlayerController != nullptr)) return;
+
+	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+}
+
+void UPuzzlePlatformGameInstance::Join(uint32 Index)
+{
+	if (!SessionInterface.IsValid()) return;
+	if (!SessionSearch.IsValid()) return;
+
 	if (Menu != nullptr)
 	{
 		Menu->Teardown();
 	}
 
-	//UEngine* Engine = GetEngine();
-	//if (!ensure(Engine != nullptr)) return;
-	//// 0 means, each time through we will update the existing message instead 
-	//Engine->AddOnScreenDebugMessage(0, 10, FColor::Blue, FString::Printf(TEXT("Joining %s"), *Address));
-
-	//APlayerController* PlayerController = GetFirstLocalPlayerController();
-	//if (!ensure(PlayerController != nullptr)) return;
-
-	//PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+	SessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[Index]);
 }
 
 void UPuzzlePlatformGameInstance::LoadMenu() // LoadMenuWidget()

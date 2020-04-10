@@ -24,7 +24,7 @@ class PUZZLEPLATFORMS_API IMenuInterface
 public:
 	virtual void Host() = 0; // You Will Able to Call It From MainMenu && it is parent of GameInstance's Function
 
-	virtual void Join(const FString& Address) = 0; // 0 Because To Make Sure  it Has No Implementation
+	virtual void Join(uint32 Index) = 0; // 0 Because To Make Sure  it Has No Implementation
 
 	virtual void LoadMainMenu() = 0;
 

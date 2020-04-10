@@ -54,7 +54,7 @@ private:
 	class UWidget* MainMenu;
 
 	UPROPERTY(meta = (BindWidget))
-	class UPanelWidget* ServerList;
+	class UPanelWidget* ServerList; // ScrollBox
 
 	// Dynamic Delegates
 	UFUNCTION()

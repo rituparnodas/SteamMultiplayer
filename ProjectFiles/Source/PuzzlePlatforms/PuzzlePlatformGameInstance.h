@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "OnlineSubsystem.h"
 #include "MenuSystem/MenuInterface.h" // Add The Folder Prefix
+#include "Interfaces/OnlineSessionInterface.h"
 #include "PuzzlePlatformGameInstance.generated.h"
 
 /**
@@ -25,7 +26,7 @@ public:
 	void Host() override;
 
 	UFUNCTION(Exec)
-	void Join(const FString& Address) override;
+	void Join(uint32 Index) override;
 
 	UFUNCTION(BlueprintCallable)
 	void LoadMenu();
@@ -57,4 +58,6 @@ private:
 	void CreateSession();
 
 	void OnFindSessionComplete(bool Success);
+
+	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 };
