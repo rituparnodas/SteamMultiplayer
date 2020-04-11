@@ -72,13 +72,15 @@ void UPuzzlePlatformGameInstance::OnCreateSessionComplete(FName SessionName, boo
 	World->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
 }
 
-void UPuzzlePlatformGameInstance::RefreshServerList()
+void UPuzzlePlatformGameInstance::RefreshServerList() // Calling From MainMenu
 {
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 
 	if (SessionSearch.IsValid())
 	{
-		SessionSearch->bIsLanQuery = true;
+		//SessionSearch->bIsLanQuery = true;
+		SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
+		SessionSearch->MaxSearchResults = 100;
 		UE_LOG(LogTemp, Warning, TEXT("Starting Finding Session"))
 		SessionInterface->FindSessions(0, SessionSearch.ToSharedRef()); // Session Search Needs Some Settings Here
 	}
@@ -113,9 +115,10 @@ void UPuzzlePlatformGameInstance::CreateSession()
 	if (SessionInterface.IsValid())
 	{
 		FOnlineSessionSettings SessionSettings;
-		SessionSettings.bIsLANMatch = true;
+		SessionSettings.bIsLANMatch = false;
 		SessionSettings.NumPublicConnections = 2;
 		SessionSettings.bShouldAdvertise = true;
+		SessionSettings.bUsesPresence = true; // Enabled it On The Server
 		SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 	}
 }
