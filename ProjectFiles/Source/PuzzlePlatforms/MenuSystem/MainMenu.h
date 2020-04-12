@@ -73,4 +73,6 @@ private:
 	void JoinServer();
 
 	TOptional<uint32> SelectedIndex;
+
+	void UpdateChildren();
 };
