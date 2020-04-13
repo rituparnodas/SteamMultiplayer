@@ -49,17 +49,20 @@ void UMainMenu::HostServer()
 	}
 }
 
-void UMainMenu::SetServerList(TArray<FString> ServerNames)
+void UMainMenu::SetServerList(TArray<FServerData> ServerNames)
 {
 	ServerList->ClearChildren();
 
 	uint32 i = 0;
-	for (const FString& ServerName : ServerNames)
+	for (const FServerData& ServerData : ServerNames)
 	{
 		UServerRow* Row = CreateWidget<UServerRow>(this, ServerRowClass);
 		if (!ensure(Row != nullptr)) return;
 
-		Row->ServerName->SetText(FText::FromString(ServerName));
+		Row->ServerName->SetText(FText::FromString(ServerData.Name));
+		FString FractionText = FString::Printf(TEXT("[%d/%d]"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
+		Row->HostUser->SetText(FText::FromString(FractionText));
+		Row->ConnectionFraction->SetText(FText::FromString(ServerData.Name));
 
 		Row->Setup(this, i); // Its Just Passing The Index Value And WBP
 		++i;

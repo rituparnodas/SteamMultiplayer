@@ -32,7 +32,7 @@ void UPuzzlePlatformGameInstance::Init()
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
 	if (Subsystem != nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Found %s"), *Subsystem->GetSubsystemName().ToString())
+		UE_LOG(LogTemp, Warning, TEXT("Found Subsystem : %s"), *Subsystem->GetSubsystemName().ToString())
 		SessionInterface = Subsystem->GetSessionInterface();
 		if (SessionInterface.IsValid())
 		{
@@ -44,7 +44,7 @@ void UPuzzlePlatformGameInstance::Init()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Not Found"))
+		UE_LOG(LogTemp, Warning, TEXT("Subsystem : Not Found"))
 	}
 }
 
@@ -115,7 +115,15 @@ void UPuzzlePlatformGameInstance::CreateSession()
 	if (SessionInterface.IsValid())
 	{
 		FOnlineSessionSettings SessionSettings;
-		SessionSettings.bIsLANMatch = false;
+		if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL")
+		{
+			SessionSettings.bIsLANMatch = true;
+		}
+		else
+		{
+			SessionSettings.bIsLANMatch = false;
+		}
+
 		SessionSettings.NumPublicConnections = 2;
 		SessionSettings.bShouldAdvertise = true;
 		SessionSettings.bUsesPresence = true; // Enabled it On The Server
@@ -129,16 +137,18 @@ void UPuzzlePlatformGameInstance::OnFindSessionComplete(bool Success)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Find Session Complete"))
 
-		TArray<FString> ServerNames;
-		ServerNames.Add("Test1");
-		ServerNames.Add("Test2");
-		ServerNames.Add("Test3");
-		for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults)
+		TArray<FServerData> ServerNames;
+		for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults) // SearchResults Find The Sessions
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Id is %s"), *SearchResult.GetSessionIdStr())
-			ServerNames.Add(SearchResult.GetSessionIdStr());
+			FServerData Data;
+			Data.Name = SearchResult.GetSessionIdStr();
+			Data.CurrentPlayers = SearchResult.Session.NumOpenPublicConnections;
+			Data.MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
+			Data.HostUserName = SearchResult.Session.OwningUserName;
+			ServerNames.Add(Data);
 		}
-		Menu->SetServerList({ ServerNames });
+		Menu->SetServerList( ServerNames );
 	}
 }
 
