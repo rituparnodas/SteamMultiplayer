@@ -70,10 +70,11 @@ void UPuzzlePlatformGameInstance::OnCreateSessionComplete(FName SessionName, boo
 	UWorld* World = GetWorld();
 	if (!ensure(World != nullptr)) return;
 
-	World->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
+	//World->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
+	World->ServerTravel("/Game/_Level/Lobby?listen");
 }
 
-void UPuzzlePlatformGameInstance::RefreshServerList() // Calling From MainMenu
+void UPuzzlePlatformGameInstance::RefreshServerList() // Calling From MainMenu // FindSession
 {
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 
@@ -129,7 +130,7 @@ void UPuzzlePlatformGameInstance::CreateSession()
 		SessionSettings.NumPublicConnections = 2;
 		SessionSettings.bShouldAdvertise = true;
 		SessionSettings.bUsesPresence = true; // Enabled it On The Server
-		SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+		SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing); // Setting The Specific Name
 
 		SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 	}
