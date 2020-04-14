@@ -22,7 +22,7 @@ class PUZZLEPLATFORMS_API IMenuInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void Host() = 0; // You Will Able to Call It From MainMenu && it is parent of GameInstance's Function
+	virtual void Host(FString ServerName) = 0; // You Will Able to Call It From MainMenu && it is parent of GameInstance's Function
 
 	virtual void Join(uint32 Index) = 0; // 0 Because To Make Sure  it Has No Implementation
 

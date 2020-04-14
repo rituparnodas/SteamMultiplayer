@@ -52,12 +52,25 @@ private:
 	class UButton* CancelJoinMenuButton;
 
 	UPROPERTY(meta = (BindWidget))
+	class UButton* CancelHostButton;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Host;
+
+	UPROPERTY(meta = (BindWidget))
 	class UButton* ExitButton;
 
+	// Assigning UE4 Spacial Property
 	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* MenuSwitcher;
 
-	// Widget Designed MainMenu & JoinMenu
+	UPROPERTY(meta = (BindWidget))
+	class UEditableTextBox* ServerHostName;
+	
+	// Widget Designed MainMenu & JoinMenu & HostMenu
+	UPROPERTY(meta = (BindWidget))
+	class UWidget* HostMenu; 
+
 	UPROPERTY(meta = (BindWidget))
 	class UWidget* JoinMenu;
 
@@ -73,6 +86,9 @@ private:
 
 	UFUNCTION()
 	void OpenJoinMenu();
+
+	UFUNCTION()
+	void OpenHostMenu();
 
 	UFUNCTION()
 	void OpenMainMenu();

@@ -15,6 +15,7 @@
 #include "Blueprint/UserWidget.h"
 
 const static FName SESSION_NAME = TEXT("My Session Game");
+const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 
 UPuzzlePlatformGameInstance::UPuzzlePlatformGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -94,8 +95,9 @@ void UPuzzlePlatformGameInstance::OnDestroySessionComplete(FName SessionName, bo
 	}
 }
 
-void UPuzzlePlatformGameInstance::Host()
+void UPuzzlePlatformGameInstance::Host(FString ServerName)
 {
+	DesiredServerName = ServerName;
 	if (SessionInterface.IsValid())
 	{
 		FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
@@ -127,6 +129,8 @@ void UPuzzlePlatformGameInstance::CreateSession()
 		SessionSettings.NumPublicConnections = 2;
 		SessionSettings.bShouldAdvertise = true;
 		SessionSettings.bUsesPresence = true; // Enabled it On The Server
+		SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+
 		SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 	}
 }
@@ -141,11 +145,20 @@ void UPuzzlePlatformGameInstance::OnFindSessionComplete(bool Success)
 		for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults) // SearchResults Find The Sessions
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Id is %s"), *SearchResult.GetSessionIdStr())
+
 			FServerData Data;
-			Data.Name = SearchResult.GetSessionIdStr();
 			Data.MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
 			Data.CurrentPlayers = Data.MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
 			Data.HostUserName = SearchResult.Session.OwningUserName;
+			FString ServerName;
+			if (SearchResult.Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, ServerName)) // ServerName <<= DesiredServerName <<= Host(FString ServerName)
+			{
+				Data.Name = ServerName;
+			}
+			else
+			{
+				Data.Name = "Could Not Get Name";
+			}
 			ServerNames.Add(Data);
 		}
 		Menu->SetServerList( ServerNames );
