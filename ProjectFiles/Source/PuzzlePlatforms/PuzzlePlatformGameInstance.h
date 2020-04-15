@@ -37,6 +37,8 @@ public:
 	virtual void LoadMainMenu() override;
 
 	void RefreshServerList() override;
+
+	void StartTheSession();
 	
 private:
 	// For Construct The Widget From File
